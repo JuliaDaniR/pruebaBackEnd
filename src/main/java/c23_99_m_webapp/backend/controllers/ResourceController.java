@@ -6,7 +6,6 @@ import c23_99_m_webapp.backend.services.ResourceService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-import org.flywaydb.core.api.output.RepairOutput;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
