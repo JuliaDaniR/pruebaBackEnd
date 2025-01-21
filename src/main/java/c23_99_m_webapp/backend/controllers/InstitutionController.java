@@ -4,6 +4,7 @@ import c23_99_m_webapp.backend.exceptions.MyException;
 import c23_99_m_webapp.backend.models.Institution;
 import c23_99_m_webapp.backend.models.dtos.*;
 import c23_99_m_webapp.backend.services.InstitutionService;
+import c23_99_m_webapp.backend.services.InventoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import c23_99_m_webapp.backend.models.dtos.DataAnswerInstitution;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class InstitutionController {
 
     private final InstitutionService institutionService;
+    private final InventoryService inventoryService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerInstitution(
@@ -76,4 +78,18 @@ public class InstitutionController {
             ));
         }
     }
+
+    @GetMapping("/inventory")
+    public ResponseEntity<InventoryDTO> getInventoryByInstitution(){
+        InventoryDTO inventoryDTO = inventoryService.getInventoryByCurrentUser();
+        return ResponseEntity.ok(inventoryDTO);
+    }
+
+    @PostMapping("/add-resource")
+    public ResponseEntity<ResourceViewDTO> addResourceToInventory(@RequestBody ResourceCreateDTO resourceDTO) {
+        ResourceViewDTO dto = inventoryService.createAndAddResourceToInventory(resourceDTO);
+        return ResponseEntity.created(URI.create("/resource" + dto.id())).body(dto);
+    }
+
+
 }

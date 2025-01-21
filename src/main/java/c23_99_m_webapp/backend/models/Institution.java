@@ -21,7 +21,6 @@ public class Institution {
     @Id
     private String cue;
     private String name;
-    private String typeInstitution;
     @Enumerated(EnumType.STRING)
     private EducationalLevel educationalLevel;
     private String address;
@@ -36,7 +35,6 @@ public class Institution {
     public Institution(DataRegistrationInstitution dataInstitutionRegistration) {
         this.cue = dataInstitutionRegistration.cue();
         this.name = dataInstitutionRegistration.name();
-        this.typeInstitution = dataInstitutionRegistration.type_institution();
         this.educationalLevel = dataInstitutionRegistration.educational_level();
         this.address = dataInstitutionRegistration.address();
         this.email = dataInstitutionRegistration.email();
@@ -47,9 +45,6 @@ public class Institution {
     public void updateInstitution(DataRegistrationInstitution.DataUpdateInstitution dataUpdateInstitution) {
         if (dataUpdateInstitution.name() != null) {
             this.name = dataUpdateInstitution.name();
-        }
-        if (dataUpdateInstitution.type_institution() != null) {
-            this.typeInstitution = dataUpdateInstitution.type_institution();
         }
         if (dataUpdateInstitution.educational_level() != null) {
             this.educationalLevel = dataUpdateInstitution.educational_level();

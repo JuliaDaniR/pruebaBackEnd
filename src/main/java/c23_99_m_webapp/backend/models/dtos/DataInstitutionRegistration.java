@@ -11,8 +11,6 @@ public record DataInstitutionRegistration(
         String cue,
         @NotBlank
         String name,
-        @NotBlank
-        String type_institution,
         @NotNull
         EducationalLevel educational_level,
         @NotBlank

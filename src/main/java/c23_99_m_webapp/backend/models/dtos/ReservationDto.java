@@ -1,6 +1,7 @@
 package c23_99_m_webapp.backend.models.dtos;
 
 
+import c23_99_m_webapp.backend.models.enums.ReservationShiftStatus;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ public record ReservationDto (
         Integer countElement,
         @NotNull
         LocalDate startDate, //refactorizar
-        @NotNull
-        String starHour,
+        ReservationShiftStatus reservationShiftStatus,
+        String selectedTimeSlot,
         Long resourceid
 
 ){

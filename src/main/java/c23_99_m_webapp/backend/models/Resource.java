@@ -1,5 +1,4 @@
 package c23_99_m_webapp.backend.models;
-
 import c23_99_m_webapp.backend.models.enums.ResourceCategory;
 import c23_99_m_webapp.backend.models.enums.ResourceStatus;
 import jakarta.persistence.*;
@@ -30,6 +29,7 @@ public class Resource {
     @OneToMany(mappedBy = "resource")
     private List<Reservation> reservations;
 
+    //Agregue porque faltaba la relacion
     @ManyToOne
     private Inventory inventory;
 

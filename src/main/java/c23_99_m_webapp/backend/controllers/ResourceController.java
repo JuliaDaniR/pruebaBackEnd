@@ -1,7 +1,9 @@
 package c23_99_m_webapp.backend.controllers;
 
-import c23_99_m_webapp.backend.models.dtos.ResourceDTO;
+import c23_99_m_webapp.backend.models.dtos.ResourceCreateDTO;
+import c23_99_m_webapp.backend.models.dtos.ResourceViewDTO;
 import c23_99_m_webapp.backend.models.dtos.ResourceStatusUpdateDTO;
+import c23_99_m_webapp.backend.models.enums.ResourceStatus;
 import c23_99_m_webapp.backend.services.ResourceService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -24,20 +26,20 @@ public class ResourceController {
 
 
     @GetMapping
-    public ResponseEntity<List<ResourceDTO>> getResources() {
-        List<ResourceDTO> resources = resourceService.getResources();
+    public ResponseEntity<List<ResourceViewDTO>> getResources() {
+        List<ResourceViewDTO> resources = resourceService.getResources();
         return ResponseEntity.ok(resources);
     }
 
-    @PostMapping
-    public ResponseEntity<ResourceDTO> createResource(@Valid @RequestBody ResourceDTO resourceDTO){
-        ResourceDTO dto = resourceService.saveResource(resourceDTO);
-        return ResponseEntity.created(URI.create("/empleado/" + dto.id())).body(dto);
-    }
+//    @PostMapping
+//    public ResponseEntity<ResourceViewDTO> createResource(@Valid @RequestBody ResourceCreateDTO resourceDTO){
+//        ResourceViewDTO dto = resourceService.saveResource(resourceDTO);
+//        return ResponseEntity.created(URI.create("/resource/" + dto.id())).body(dto);
+//    }
 
     @PutMapping(value="{id}")
-    public ResponseEntity<ResourceDTO> updateResource(@NotNull @PathVariable long id, @Valid @RequestBody ResourceDTO dto){
-        ResourceDTO dtoModificado = resourceService.updateResource(id, dto);
+    public ResponseEntity<ResourceViewDTO> updateResource(@NotNull @PathVariable long id, @Valid @RequestBody ResourceCreateDTO dto){
+        ResourceViewDTO dtoModificado = resourceService.updateResource(id, dto);
         return ResponseEntity.ok(dtoModificado);
     }
 
@@ -49,11 +51,17 @@ public class ResourceController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<ResourceDTO> updateResourceStatus(
+    public ResponseEntity<ResourceViewDTO> updateResourceStatus(
             @PathVariable Long id,
             @RequestBody ResourceStatusUpdateDTO statusUpdateDTO) {
-        ResourceDTO updatedResource = resourceService.updateResourceStatus(id, statusUpdateDTO.status());
+        ResourceViewDTO updatedResource = resourceService.updateResourceStatus(id, statusUpdateDTO.status());
         return ResponseEntity.ok(updatedResource);
+    }
+
+    @GetMapping("/by-status")
+    public ResponseEntity<List<ResourceViewDTO>> getResourcesByStatus(@RequestParam ResourceStatus status) {
+        List<ResourceViewDTO> resources = resourceService.getResourcesByStatus(status);
+        return ResponseEntity.ok(resources);
     }
 
 

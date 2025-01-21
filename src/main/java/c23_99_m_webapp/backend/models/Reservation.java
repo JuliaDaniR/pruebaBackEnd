@@ -7,6 +7,7 @@ import c23_99_m_webapp.backend.models.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,10 +22,11 @@ public class Reservation {
 
     private Integer countElement;
     private LocalDate startDate;
-    private String startHour;
+    //private String startHour;
 
-//    @Enumerated(EnumType.STRING)
-//    private ReservationShiftStatus reservationShiftStatus;
+    @Enumerated(EnumType.STRING)
+    private ReservationShiftStatus reservationShiftStatus;
+    private String selectedTimeSlot;
 
     @Enumerated(EnumType.STRING)
     private ReservationStatus reservationStatus;
@@ -37,18 +39,35 @@ public class Reservation {
     private Resource resource;
 
     private boolean deleted = false;
-    
+
     public Reservation(ReservationDto reservationDto) {
         this.countElement = reservationDto.countElement();
         this.startDate = reservationDto.startDate();
-        this.startHour = reservationDto.starHour();
+        this.reservationShiftStatus = reservationDto.reservationShiftStatus();
+        this.selectedTimeSlot = reservationDto.selectedTimeSlot();
+    }
+
+    public void handleReservationShiftStatus(){
+
+        if (!isValidTimeSlot()) {
+            System.out.println("El horario seleccionado no es válido para el turno " + this.reservationShiftStatus);
+            return;
+        }
+
+        switch (this.reservationShiftStatus) {
+            case MANANA, TARDE, NOCHE -> {
+                System.out.println("Horarios de la mañana: " + this.reservationShiftStatus.getSchedule());
+                System.out.println("Horario seleccionado: " + this.selectedTimeSlot);
+            }
+        }
+    }
+    public boolean isValidTimeSlot() {
+        List<String> validTimeSlots = this.reservationShiftStatus.getSchedule();
+        return validTimeSlots.contains(this.selectedTimeSlot);
     }
 
     public void handleReservationStatus() {
         switch (this.reservationStatus) {
-//            case PENDING:
-//                System.out.println("La reservación está pendiente.");
-//                break;
             case CANCELLED:
                 System.out.println("La reservación ha sido cancelada.");
                 break;
@@ -58,9 +77,6 @@ public class Reservation {
             case FINISHED:
                 System.out.println("La reservación ha sido finalizada.");
                 break;
-//            case REJECTED:
-//                System.out.println("La reservación ha sido rechazada.");
-//                break;
             default:
                 System.out.println("Estado de reservación desconocido.");
                 break;
