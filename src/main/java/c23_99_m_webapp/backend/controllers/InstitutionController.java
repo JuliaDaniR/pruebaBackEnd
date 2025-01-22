@@ -21,6 +21,7 @@ import java.util.Map;
 @RequestMapping("/institution")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-key")
+@CrossOrigin(origins = "${url.front.deploy}")
 public class InstitutionController {
 
     private final InstitutionService institutionService;

@@ -24,6 +24,7 @@ import org.springframework.data.web.PageableDefault;
 @RequestMapping("/user")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${url.front.deploy}")
 public class UserController {
 
     private final UserService userService;

@@ -4,14 +4,12 @@ import c23_99_m_webapp.backend.models.dtos.InventoryDTO;
 import c23_99_m_webapp.backend.services.InventoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventory")
 @SecurityRequirement(name = "bearer-key")
+@CrossOrigin(origins = "${url.front.deploy}")
 public class InventoryController {
 
     public final InventoryService inventoryService;

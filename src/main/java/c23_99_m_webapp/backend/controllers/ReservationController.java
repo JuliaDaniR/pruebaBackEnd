@@ -21,6 +21,7 @@ import java.util.Optional;
 @RequestMapping(value = "/reservations")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "${url.front.deploy}")
 public class ReservationController {
 
     @Autowired

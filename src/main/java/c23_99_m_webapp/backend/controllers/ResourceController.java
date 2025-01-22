@@ -17,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/resource")
 @SecurityRequirement(name = "bearer-key")
+@CrossOrigin(origins = "${url.front.deploy}")
 public class ResourceController {
 
     ResourceService resourceService;
