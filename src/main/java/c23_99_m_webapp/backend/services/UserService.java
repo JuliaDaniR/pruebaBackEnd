@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -43,8 +45,15 @@ public class UserService {
 
             User user = new User(dataUserRegistration, institutionEncontrada);
 
+            Optional<User> userFind = userRepository.findByDni(user.getDni());
+
+            if(userFind.isPresent()){
+                throw new MyException("El dni ya corresponde a un usuario que está registrado.");
+            }
+
             userRepository.save(user);
-            if (institutionEncontrada != null) {
+
+            if (institutionEncontrada != null & !userFind.isPresent()) {
                 emailService.getEmailTeacher(
                         user.getEmail(),
                         user.getFullName(),

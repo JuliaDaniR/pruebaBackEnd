@@ -43,6 +43,4 @@ public class EmailService {
                 fullName, institutionName, email, password));
         javaMailSender.send(mailMessage);
     }
-
-
 }

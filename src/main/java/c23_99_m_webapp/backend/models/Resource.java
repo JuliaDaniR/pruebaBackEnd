@@ -29,7 +29,6 @@ public class Resource {
     @OneToMany(mappedBy = "resource")
     private List<Reservation> reservations;
 
-    //Agregue porque faltaba la relacion
     @ManyToOne
     private Inventory inventory;
 
