@@ -19,7 +19,7 @@ public class AuthenticationController {
     private AuthenticationManager authenticationManager;
 @Autowired
     private TokenService tokenService;
-
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public ResponseEntity<DataJWTtoken> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
 

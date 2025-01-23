@@ -41,7 +41,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST,"/aut/login").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/health").permitAll()
                         .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/aut/login?logout")
