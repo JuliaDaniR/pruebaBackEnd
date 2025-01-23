@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/aut")
-@CrossOrigin(origins = "${url.front.deploy}")
 public class AuthenticationController {
 @Autowired
     private AuthenticationManager authenticationManager;
@@ -30,5 +29,4 @@ public class AuthenticationController {
         DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(),((User) userAuthenticated.getPrincipal()).getRole());
         return ResponseEntity.ok(response);
     }
-
 }
