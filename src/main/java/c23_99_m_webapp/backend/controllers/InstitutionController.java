@@ -21,7 +21,7 @@ import java.util.Map;
 @RequestMapping("/institution")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearer-key")
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class InstitutionController {
 
     private final InstitutionService institutionService;

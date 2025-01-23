@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class HealthCheckController {
 
     @Value("${url.front.deploy}")

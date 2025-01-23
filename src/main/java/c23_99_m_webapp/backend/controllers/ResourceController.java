@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/resource")
 @SecurityRequirement(name = "bearer-key")
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class ResourceController {
 
     ResourceService resourceService;

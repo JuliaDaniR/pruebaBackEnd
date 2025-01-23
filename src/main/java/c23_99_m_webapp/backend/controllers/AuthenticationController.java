@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;

@@ -21,7 +21,7 @@ import java.util.Optional;
 @RequestMapping(value = "/reservations")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class ReservationController {
 
     @Autowired

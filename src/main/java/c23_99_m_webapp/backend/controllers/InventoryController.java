@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/inventory")
 @SecurityRequirement(name = "bearer-key")
-@CrossOrigin(origins = "${url.front.deploy}")
+@CrossOrigin(origins = "https://class-kit.vercel.app")
 public class InventoryController {
 
     public final InventoryService inventoryService;
