@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/aut")
+@RequestMapping("/login")
 @CrossOrigin(origins = "${url.front.deploy}")
 public class AuthenticationController {
     @Autowired
@@ -25,12 +25,9 @@ public class AuthenticationController {
     @Autowired
     private TokenService tokenService;
 
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<DataJWTtoken> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
-        logger.info("Intentando iniciar sesión para el usuario: {}", dataAuthenticationUser.email());
-        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
+       Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
         Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
         String tokenJWT = tokenService.generateToken((User) userAuthenticated.getPrincipal());
         DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(),((User) userAuthenticated.getPrincipal()).getRole());
