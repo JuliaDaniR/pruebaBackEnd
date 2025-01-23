@@ -63,7 +63,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(urlFront)); // URL del frontend
+        configuration.setAllowedOrigins(Arrays.asList("https://class-kit.vercel.app")); // URL del frontend
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Métodos permitidos
         configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los encabezados
         configuration.setAllowCredentials(true); // Permitir cookies
