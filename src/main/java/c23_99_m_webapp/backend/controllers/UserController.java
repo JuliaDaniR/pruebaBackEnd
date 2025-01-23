@@ -24,7 +24,7 @@ import org.springframework.data.web.PageableDefault;
 @RequestMapping("/user")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://class-kit.vercel.app")
+@CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
