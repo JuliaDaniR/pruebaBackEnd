@@ -1,5 +1,6 @@
 package c23_99_m_webapp.backend.security;
 
+import c23_99_m_webapp.backend.configurations.CorsFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import java.util.Arrays;
 public class SecurityConfiguration {
 
     private final SecurityFilter securityFilter;
+    private final CorsFilter corsFilter;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -42,7 +44,8 @@ public class SecurityConfiguration {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll())
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(corsFilter, SecurityFilter.class);
         return http.build();
     }
 
