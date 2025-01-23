@@ -6,7 +6,6 @@ import c23_99_m_webapp.backend.security.DataJWTtoken;
 import c23_99_m_webapp.backend.security.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/aut")
 @CrossOrigin(origins = "${url.front.deploy}")
 public class AuthenticationController {
 @Autowired
@@ -22,21 +21,14 @@ public class AuthenticationController {
 @Autowired
     private TokenService tokenService;
 
-    @PostMapping
+    @PostMapping("/login")
     public ResponseEntity<DataJWTtoken> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
-        try {
-            System.out.println("Recibida solicitud de autenticación para: " + dataAuthenticationUser.email());
-            Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
-            Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
-            String tokenJWT = tokenService.generateToken((User) userAuthenticated.getPrincipal());
-            DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(), ((User) userAuthenticated.getPrincipal()).getRole());
-            System.out.println("Autenticación exitosa para: " + dataAuthenticationUser.email());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.err.println("Error durante la autenticación: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    }
 
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
+        Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
+        String tokenJWT = tokenService.generateToken((User) userAuthenticated.getPrincipal());
+        DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(),((User) userAuthenticated.getPrincipal()).getRole());
+        return ResponseEntity.ok(response);
+    }
 
 }
