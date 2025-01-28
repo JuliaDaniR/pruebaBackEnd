@@ -4,6 +4,8 @@ package c23_99_m_webapp.backend.repositories;
 import c23_99_m_webapp.backend.models.Reservation;
 import c23_99_m_webapp.backend.models.Resource;
 import c23_99_m_webapp.backend.models.enums.ReservationStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,8 +17,10 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 
-//    //buscar reservacion por fecha
-//    Reservation findReservationByStartDate(LocalDate startDate);
+    //buscar reservacion por fecha con paginacion
+    @Query("SELECT r FROM Reservation r WHERE startDate = :startDate")
+    Page<Reservation> findReservationByDate(@Param("startDate") LocalDate startDate, Pageable pageable);
+
 //
 //    //buscar reservacion por status
 //    @Query("SELECT r FROM Reservation r WHERE reservationStatus = :reservationStatus")

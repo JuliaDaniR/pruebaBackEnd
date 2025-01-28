@@ -9,7 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TokenService {
@@ -31,7 +34,6 @@ public class TokenService {
     }
 
     public String getSubject(String tokenJWT) {
-
         try {
             Algorithm algorithm = Algorithm.HMAC256(apiSecret);
             return JWT.require(algorithm)
@@ -40,13 +42,14 @@ public class TokenService {
                     .verify(tokenJWT)
                     .getSubject();
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Invalid or expired JWT token");
+            throw new RuntimeException("Invalid or expired JWT token", exception);
         }
     }
 
-    //se cambio .plusMinutes a .plusHours para extender el tiempo del token
+    // Obtiene la fecha de expiración usando la zona horaria predeterminada del servidor
     private Instant dateExpiration() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
+        ZoneId zone = ZoneId.systemDefault();  // Obtener la zona horaria del sistema
+        return LocalDateTime.now(zone).plusMinutes(30).toInstant(ZoneOffset.ofTotalSeconds(zone.getRules().getOffset(LocalDateTime.now()).getTotalSeconds()));
     }
 }
 

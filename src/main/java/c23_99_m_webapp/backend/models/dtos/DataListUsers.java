@@ -6,12 +6,12 @@ public record DataListUsers(
         String dni,
         String fullName,
         String email,
-        String nameSchool) {
+        String cue) {
 
     public DataListUsers(User user) {
         this(user.getDni(),
                 user.getFullName(),
                 user.getEmail(),
-                user.getInstitution() != null ? user.getInstitution().getName() : "No asignado");
+                user.getInstitution() != null ? user.getInstitution().getCue() : "No asignado");
     }
 }

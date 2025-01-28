@@ -1,5 +1,6 @@
 package c23_99_m_webapp.backend.services;
 
+import c23_99_m_webapp.backend.exceptions.MyException;
 import c23_99_m_webapp.backend.exceptions.ResourceNotFoundException;
 import c23_99_m_webapp.backend.mappers.InventoryMapper;
 import c23_99_m_webapp.backend.mappers.ResourceCreateMapper;
@@ -41,7 +42,7 @@ public class InventoryService {
         return InventoryMapper.toDTO(inventory);
     }
 
-    public InventoryDTO getInventoryByCurrentUser() {
+    public InventoryDTO getInventoryByCurrentUser() throws MyException {
 
         User user = userService.getCurrentUser();
 
@@ -58,7 +59,7 @@ public class InventoryService {
         return InventoryMapper.toDTO(inventory);
     }
 
-    public ResourceViewDTO createAndAddResourceToInventory(ResourceCreateDTO resourceDTO){
+    public ResourceViewDTO createAndAddResourceToInventory(ResourceCreateDTO resourceDTO) throws MyException {
 
         User user = userService.getCurrentUser();
 

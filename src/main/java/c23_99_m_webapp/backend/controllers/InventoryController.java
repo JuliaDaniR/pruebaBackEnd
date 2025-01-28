@@ -1,5 +1,6 @@
 package c23_99_m_webapp.backend.controllers;
 
+import c23_99_m_webapp.backend.exceptions.MyException;
 import c23_99_m_webapp.backend.models.dtos.InventoryDTO;
 import c23_99_m_webapp.backend.services.InventoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/inventory")
-@SecurityRequirement(name = "bearer-key")
 @CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
+@SecurityRequirement(name = "bearer-key")
 public class InventoryController {
 
     public final InventoryService inventoryService;
@@ -18,7 +19,13 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping
+    @GetMapping("/getInstitution")
+    public ResponseEntity<InventoryDTO> getInventoryByInstitution() throws MyException {
+        InventoryDTO inventoryDTO = inventoryService.getInventoryByCurrentUser();
+        return ResponseEntity.ok(inventoryDTO);
+    }
+
+    @GetMapping("/getId")
     ResponseEntity<InventoryDTO> getInventoryById(@RequestParam Long id){
         InventoryDTO inventory = inventoryService.getInventoryById(id);
         return ResponseEntity.ok(inventory);

@@ -18,8 +18,7 @@ public record DataRegistrationUser(
         String password,
         @NotBlank
         String password2,
-        Role role,
-        String institution_cue
+        Role role
 ) {
         public static record DataUpdateUser(
                 @NotBlank

@@ -15,10 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
-
+@CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/login")
-@CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -27,10 +26,11 @@ public class AuthenticationController {
 
     @PostMapping
     public ResponseEntity<DataJWTtoken> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
-       Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
+        System.out.println("Entrando en login");
+        Authentication authenticationToken = new UsernamePasswordAuthenticationToken(dataAuthenticationUser.email(), dataAuthenticationUser.password());
         Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
         String tokenJWT = tokenService.generateToken((User) userAuthenticated.getPrincipal());
-        DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(),((User) userAuthenticated.getPrincipal()).getRole());
+        DataJWTtoken response = new DataJWTtoken(tokenJWT, ((User) userAuthenticated.getPrincipal()).getFullName(),((User) userAuthenticated.getPrincipal()).getDni(),((User) userAuthenticated.getPrincipal()).getRole());
         return ResponseEntity.ok(response);
     }
 }

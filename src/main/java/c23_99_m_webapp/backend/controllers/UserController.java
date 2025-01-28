@@ -1,10 +1,12 @@
 package c23_99_m_webapp.backend.controllers;
 
 import c23_99_m_webapp.backend.exceptions.MyException;
+import c23_99_m_webapp.backend.models.Institution;
 import c23_99_m_webapp.backend.models.User;
 import c23_99_m_webapp.backend.models.dtos.DataAnswerUser;
 import c23_99_m_webapp.backend.models.dtos.DataListUsers;
 import c23_99_m_webapp.backend.models.dtos.DataRegistrationUser;
+import c23_99_m_webapp.backend.repositories.InstitutionRepository;
 import c23_99_m_webapp.backend.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -16,24 +18,28 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 @RestController
 @RequestMapping("/user")
+@CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
 @SecurityRequirement(name = "bearer-key")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://class-kit.vercel.app", allowedHeaders = "*", allowCredentials = "true")
 public class UserController {
 
     private final UserService userService;
+    private final InstitutionRepository institutionRepository;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody DataRegistrationUser dataUserRegistration,
                                           UriComponentsBuilder uriComponentsBuilder) {
         try {
-            User user = userService.registerUser(dataUserRegistration);
+            User userAutenticated = userService.getCurrentUser();
+            Optional<Institution> institutionOptional = institutionRepository.findByCue(userAutenticated.getInstitution().getCue());
+            User user = userService.registerUser(dataUserRegistration,institutionOptional.get());
             DataAnswerUser dataAnswerUser = new DataAnswerUser(user.getFullName(), user.getEmail());
             URI url = uriComponentsBuilder.path("/user/{dni}").buildAndExpand(user.getDni()).toUri();
             return ResponseEntity.created(url).body(Map.of(
@@ -55,7 +61,7 @@ public class UserController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<?> listUsers(@PageableDefault(size = 3) Pageable pagination) {
+    public ResponseEntity<?> listUsers(@PageableDefault(size = 9) Pageable pagination) {
         try {
             Page<DataListUsers> users = userService.listUsers(pagination);
             return ResponseEntity.ok(Map.of(
