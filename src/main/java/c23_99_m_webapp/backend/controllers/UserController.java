@@ -40,7 +40,7 @@ public class UserController {
             User userAutenticated = userService.getCurrentUser();
             Optional<Institution> institutionOptional = institutionRepository.findByCue(userAutenticated.getInstitution().getCue());
             User user = userService.registerUser(dataUserRegistration,institutionOptional.get());
-            DataAnswerUser dataAnswerUser = new DataAnswerUser(user.getFullName(), user.getEmail());
+            DataAnswerUser dataAnswerUser = new DataAnswerUser(user.getFullName(), user.getEmail(), user.getRole());
             URI url = uriComponentsBuilder.path("/user/{dni}").buildAndExpand(user.getDni()).toUri();
             return ResponseEntity.created(url).body(Map.of(
                     "status", "success",
@@ -77,7 +77,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody @Valid DataRegistrationUser.DataUpdateUser dataUserUpdate) {
         try {
             DataListUsers user = userService.updateUser(dataUserUpdate);
@@ -99,7 +99,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/deactivate/{dni}")
+    @PatchMapping("/deactivate/{dni}")
     public ResponseEntity<?> deactivateUser(@PathVariable String dni) {
         try {
             userService.deactivateUser(dni);
@@ -115,7 +115,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/activate/{dni}")
+    @PatchMapping("/activate/{dni}")
     public ResponseEntity<?> activateUser(@PathVariable String dni) {
         try {
             userService.activateUser(dni);

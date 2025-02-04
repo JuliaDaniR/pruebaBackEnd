@@ -1,6 +1,7 @@
 package c23_99_m_webapp.backend.services;
 
 import c23_99_m_webapp.backend.exceptions.MyException;
+import c23_99_m_webapp.backend.exceptions.ResourceNotFoundException;
 import c23_99_m_webapp.backend.models.Institution;
 import c23_99_m_webapp.backend.models.User;
 import c23_99_m_webapp.backend.models.dtos.DataListUsers;
@@ -36,7 +37,7 @@ public class UserService {
 
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-  @Transactional
+    @Transactional
     public User registerUser(DataRegistrationUser dataUserRegistration, Institution institution) throws MyException {
         Institution institutionEncontrada = null;
 
@@ -49,9 +50,10 @@ public class UserService {
         User userAutenticado = null;
         try {
             userAutenticado = getCurrentUser();
-        } catch (MyException e) {
-
+        } catch (ResourceNotFoundException e) {
+            logger.warn("No se pudo obtener el usuario autenticado, se usará la institución proporcionada.");
         }
+
         User user = new User(dataUserRegistration,
                 (userAutenticado != null) ? userAutenticado.getInstitution() : institutionEncontrada);
 
@@ -65,7 +67,8 @@ public class UserService {
         }
         return user;
     }
-    
+
+
     @Transactional
     public DataListUsers updateUser(DataRegistrationUser.DataUpdateUser dataUserUpdate) throws MyException {
         User user = userRepository.findByDni(dataUserUpdate.dni())
@@ -114,18 +117,18 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public User getCurrentUser() throws MyException {
+    public User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails userDetails)) {
-            throw new MyException("Usuario no autenticado.");
+            throw new ResourceNotFoundException("Usuario no autenticado.");
         }
 
         return userRepository.findByEmail(userDetails.getUsername());
     }
 
     private DataListUsers convertToDataListUsers(User user) {
-        return new DataListUsers(user.getDni(), user.getFullName(), user.getEmail(), user.getInstitution().getCue());
+        return new DataListUsers(user.getDni(), user.getFullName(), user.getEmail(), user.getInstitution().getCue(),user.getRole());
     }
 
     private void validateEmailUpdate(String newEmail, String oldEmail) throws MyException {

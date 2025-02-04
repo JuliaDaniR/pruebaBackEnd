@@ -9,9 +9,7 @@ import java.time.LocalDate;
 public record ReservationDto (
 
         @NotNull
-        Integer countElement,
-        @NotNull
-        LocalDate startDate, //refactorizar
+        LocalDate startDate,
         ReservationShiftStatus reservationShiftStatus,
         String selectedTimeSlot,
         Long resourceid

@@ -3,6 +3,7 @@ package c23_99_m_webapp.backend.repositories;
 
 import c23_99_m_webapp.backend.models.Reservation;
 import c23_99_m_webapp.backend.models.Resource;
+import c23_99_m_webapp.backend.models.enums.ReservationShiftStatus;
 import c23_99_m_webapp.backend.models.enums.ReservationStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,17 +18,27 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation,Long> {
 
-    //buscar reservacion por fecha con paginacion
+    @Query("SELECT r FROM Reservation r WHERE r.user.dni = :dni AND r.deleted = false")
+    Page<Reservation> findReservationByUserDni(@Param("dni") String dni, Pageable pageable);
+
+
     @Query("SELECT r FROM Reservation r WHERE startDate = :startDate")
     Page<Reservation> findReservationByDate(@Param("startDate") LocalDate startDate, Pageable pageable);
 
-//
-//    //buscar reservacion por status
-//    @Query("SELECT r FROM Reservation r WHERE reservationStatus = :reservationStatus")
-//    Reservation findReservationByStatus(@Param("reservationStatus")ReservationStatus reservationStatus);
+    @Query("SELECT r FROM Reservation r WHERE reservationStatus = :reservationStatus")
+    Page<Reservation> findReservationByStatus(@Param("reservationStatus") ReservationStatus reservationStatus, Pageable pageable);
+
+    @Query("SELECT r FROM Reservation r WHERE reservationShiftStatus = :reservationShiftStatus")
+    Page<Reservation> findReservationByShiftStatus(@Param("reservationShiftStatus") ReservationShiftStatus reservationShiftStatus, Pageable pageable);
 
     @Query("SELECT r FROM Reservation r WHERE r.deleted = true")
-    List<Reservation> findAllDeleted();
+    Page<Reservation> findAllDeleted(Pageable pageable);
+
+    @Query("SELECT r FROM Reservation r WHERE r.deleted = false")
+    Page<Reservation> findAllActive(Pageable pageable);
 
     boolean existsByResource(Resource resource);
+
+    boolean existsByResourceIdAndStartDate(Long resourceId, LocalDate startDate);
+    List<Reservation> findAllByStartDateAndResource(LocalDate startDate, Resource resource);
 }

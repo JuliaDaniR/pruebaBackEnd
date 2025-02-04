@@ -1,4 +1,6 @@
 package c23_99_m_webapp.backend.models.dtos;
 
-public record DataAnswerUser(String name, String email) {
+import c23_99_m_webapp.backend.models.enums.Role;
+
+public record DataAnswerUser(String name, String email, Role role) {
 }

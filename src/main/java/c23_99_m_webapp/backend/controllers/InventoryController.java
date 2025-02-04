@@ -4,8 +4,11 @@ import c23_99_m_webapp.backend.exceptions.MyException;
 import c23_99_m_webapp.backend.models.dtos.InventoryDTO;
 import c23_99_m_webapp.backend.services.InventoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/inventory")
@@ -19,16 +22,24 @@ public class InventoryController {
         this.inventoryService = inventoryService;
     }
 
-    @GetMapping("/getInstitution")
-    public ResponseEntity<InventoryDTO> getInventoryByInstitution() throws MyException {
+    @GetMapping("/ofInstitution")
+    public ResponseEntity<?> getInventoryByInstitution(){
         InventoryDTO inventoryDTO = inventoryService.getInventoryByCurrentUser();
-        return ResponseEntity.ok(inventoryDTO);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Inventario de institución obtenida con éxito",
+                "data", inventoryDTO
+        ));
     }
 
-    @GetMapping("/getId")
-    ResponseEntity<InventoryDTO> getInventoryById(@RequestParam Long id){
+    @GetMapping("getById/{id}")
+    ResponseEntity<?> getInventoryById(@NotNull @PathVariable Long id){
         InventoryDTO inventory = inventoryService.getInventoryById(id);
-        return ResponseEntity.ok(inventory);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Inventario obtenido con éxito",
+                "data", inventory
+        ));
     }
 
 //    @PostMapping("/{id}/resources")
@@ -43,11 +54,6 @@ public class InventoryController {
 //        return ResponseEntity.status(HttpStatus.CREATED).build();
 //    }
 
-//    @PostMapping
-//    public ResponseEntity<CreateInventoryDTO> createInventory(@Valid @RequestBody CreateInventoryDTO inventoryDTO){
-//        CreateInventoryDTO dto = inventoryService.saveInventory(inventoryDTO);
-//        return ResponseEntity.created(URI.create("/inventory/" + dto.id())).body(dto);
-//    }
 
 
 

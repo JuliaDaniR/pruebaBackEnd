@@ -1,22 +1,20 @@
 package c23_99_m_webapp.backend.models.dtos;
 
+
+import c23_99_m_webapp.backend.models.User;
 import c23_99_m_webapp.backend.models.enums.ReservationShiftStatus;
 import c23_99_m_webapp.backend.models.enums.ReservationStatus;
-import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 
-//lo que se deberia mostrar en consola (respuesta)
-//lo que se deberia mostrar en consola (respuesta)
-public record DataAnswerReservation(
+public record DataAnswerReserveByDniUser(
 
-        String userName,
+        Long reserveId,
         LocalDate date,
         ReservationShiftStatus reservationShiftStatus,
         String selectedTimeSlot,
+        Long resourceId,
         String resourceName,
         ReservationStatus reservationStatus
-
 ) {
 }
-

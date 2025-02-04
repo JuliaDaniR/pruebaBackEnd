@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
     List<Resource> findAllByStatus(ResourceStatus status);
+    Resource findByName(String name);
 }

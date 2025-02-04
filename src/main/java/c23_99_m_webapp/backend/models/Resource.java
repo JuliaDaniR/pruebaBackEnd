@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "resources")
 public class Resource {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,6 +32,8 @@ public class Resource {
 
     @ManyToOne
     private Inventory inventory;
+
+    //private Long inventoryId;
 
 
 //private Integer quantity;
