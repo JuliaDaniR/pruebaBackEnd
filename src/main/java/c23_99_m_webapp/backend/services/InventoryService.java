@@ -90,6 +90,8 @@ public class InventoryService {
         String nameInventory = String.format("Inventario %s", nameInstitute);
 
         inventory.setName(nameInventory);
+
+
         inventoryRepository.save(inventory);
 
         return inventory;
@@ -98,4 +100,5 @@ public class InventoryService {
 
 
 }
+
 

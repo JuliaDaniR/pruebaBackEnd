@@ -5,10 +5,9 @@ import c23_99_m_webapp.backend.exceptions.ResourceNotFoundException;
 import c23_99_m_webapp.backend.exceptions.ResourceUnavailableException;
 import c23_99_m_webapp.backend.mappers.ResourceCreateMapper;
 import c23_99_m_webapp.backend.mappers.ResourceViewMapper;
-import c23_99_m_webapp.backend.models.Reservation;
+import c23_99_m_webapp.backend.models.*;
 import c23_99_m_webapp.backend.models.dtos.ReservationDto;
 import c23_99_m_webapp.backend.models.dtos.ResourceCreateDTO;
-import c23_99_m_webapp.backend.models.Resource;
 import c23_99_m_webapp.backend.models.dtos.ResourceViewDTO;
 import c23_99_m_webapp.backend.models.enums.ReservationShiftStatus;
 import c23_99_m_webapp.backend.models.enums.ResourceStatus;
@@ -16,6 +15,9 @@ import c23_99_m_webapp.backend.repositories.ReservationRepository;
 import c23_99_m_webapp.backend.repositories.ResourceRepository;
 import c23_99_m_webapp.backend.validations.ValidationResource;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,11 +32,14 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ReservationRepository reservationRepository;
     private final List<ValidationResource> validations;
+    private final UserService userService;
 
-    public ResourceService(ResourceRepository resourceRepository, ReservationRepository reservationRepository, List<ValidationResource> validations){
+    public ResourceService(ResourceRepository resourceRepository, ReservationRepository reservationRepository,
+                           List<ValidationResource> validations, UserService userService){
         this.resourceRepository = resourceRepository;
         this.reservationRepository = reservationRepository;
         this.validations = validations;
+        this.userService = userService;
     }
 
     public List<ResourceViewDTO> getResources() {
@@ -43,18 +48,30 @@ public class ResourceService {
 
     }
 
+    public Page<ResourceViewDTO> getPaginatedResources(Pageable pagination) {
+        User user = userService.getCurrentUser();
+        Institution institution = user.getInstitution();
+        if (institution == null) {
+            throw new ResourceNotFoundException("El usuario no tiene una institución asociada.");
+        }
+
+        Inventory inventory = institution.getInventory();
+        if (inventory == null) {
+            throw new ResourceNotFoundException("La institución no tiene un inventario asignado.");
+        }
+
+        List<Resource> resources = resourceRepository.findAllByInventory(inventory);
+        Page<Resource> paginatedResources = paginateResources(resources, pagination);
+
+        return paginatedResources.map(ResourceViewMapper::toDTO);
+    }
+
     public ResourceViewDTO getResourceById(Long id) {
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el recurso con Id: " + id));
 
         return ResourceViewMapper.toDTO(resource);
     }
-//
-//    public ResourceViewDTO saveResource(ResourceCreateDTO resourceDTO){
-//        Resource resource = resourceRepository.save(toEntity(resourceDTO));
-//        return ResourceViewMapper.toDTO(resource);
-//
-//    }
 
     public Resource saveResourceEntity(ResourceCreateDTO resourceDTO) {
         for (ValidationResource v : validations) {
@@ -71,12 +88,13 @@ public class ResourceService {
 
     }
 
+    @Transactional
     public ResourceViewDTO updateResource(long id, ResourceCreateDTO dto) {
         Resource existingResource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el recurso con Id: " + id));
-        for (ValidationResource v : validations) {
-            v.validate(dto);
-        }
+//        for (ValidationResource v : validations) {
+//            v.validate(dto);
+//        }
 
         existingResource.setName(dto.name());
         existingResource.setDescription(dto.description());
@@ -101,7 +119,7 @@ public class ResourceService {
         this.resourceRepository.deleteById(id);
     }
 
-
+    @Transactional
     public ResourceViewDTO updateAndReturnResourceStatus(Long id, ResourceStatus status){
         Resource resource = resourceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("No se encontró el recurso con Id: " + id));
@@ -148,6 +166,24 @@ public class ResourceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Recurso no encontrado con ID: " + resourceId));
         resource.setStatus(status);
         resourceRepository.save(resource);
+    }
+
+    public Page<Resource> paginateResources(List<Resource> resources, Pageable pageable) {
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize; //indice del primer elemento de cada pagina
+
+        List<Resource> listaPaginada;
+
+        if (resources.size() < startItem) {
+            listaPaginada = List.of(); // Retorna una lista vacía si la página excede el tamaño
+        } else {
+            int toIndex = Math.min(startItem + pageSize, resources.size());//math.min: devuelve el menor,
+            //por si la lista de recursos es menor a la cantidad solicitada de recursos por página
+            listaPaginada = resources.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<>(listaPaginada, pageable, resources.size());
     }
 
 

@@ -173,7 +173,6 @@ public class ReservationController {
                     "error", "message",
                     e.getMessage()));
         }
-        //return ResponseEntity.ok().body(reservationService.getDeletedReservations()).getBody();
     }
 
     @PutMapping("/restore/{id}")

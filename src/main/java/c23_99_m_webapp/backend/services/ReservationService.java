@@ -64,7 +64,7 @@ public class ReservationService {
         reservation.setDeleted(false);
         reservation.setUser(user);
 
-        resource.setStatus(ResourceStatus.IN_USE);
+        //resource.setStatus(ResourceStatus.IN_USE);
         resource = resourceRepository.save(resource);
 
         reservation.setResource(resource);
@@ -138,7 +138,7 @@ public class ReservationService {
             reservation.setReservationShiftStatus(updatedReservationDto.reservationShiftStatus());
             reservation.setSelectedTimeSlot(updatedReservationDto.selectedTimeSlot());
 
-            Resource resource = resourceRepository.findById(updatedReservationDto.resourceid()).orElseThrow();
+            Resource resource = resourceRepository.findById(updatedReservationDto.resourceId()).orElseThrow();
             reservation.setResource(resource);
             resourceRepository.save(resource);
 

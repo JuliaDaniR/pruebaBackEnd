@@ -12,7 +12,7 @@ public record ReservationDto (
         LocalDate startDate,
         ReservationShiftStatus reservationShiftStatus,
         String selectedTimeSlot,
-        Long resourceid
+        Long resourceId
 
 ){
 }

@@ -10,6 +10,9 @@ import c23_99_m_webapp.backend.services.ResourceService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +43,15 @@ public class ResourceController {
                 "data", resources
         ));
     }
+    @GetMapping("/allResourcesOfInstitution")
+    public ResponseEntity<?> getPaginatedResources(@PageableDefault(size = 9) Pageable pagination) {
+        Page<ResourceViewDTO> resources = resourceService.getPaginatedResources(pagination);
+        return ResponseEntity.ok(Map.of(
+                "status", "success",
+                "message", "Lista de recursos paginados obtenida con éxito",
+                "data", resources
+        ));
+    }
 
     @GetMapping("/getById/{id}")
     public ResponseEntity<?> getResourcesById(@NotNull @PathVariable Long id) {
@@ -61,12 +73,6 @@ public class ResourceController {
         ));
 
     }
-
-//    @PostMapping
-//    public ResponseEntity<ResourceViewDTO> createResource(@Valid @RequestBody ResourceCreateDTO resourceDTO){
-//        ResourceViewDTO dto = resourceService.saveResource(resourceDTO);
-//        return ResponseEntity.created(URI.create("/resource/" + dto.id())).body(dto);
-//    }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateResource(@NotNull @PathVariable long id, @Valid @RequestBody ResourceCreateDTO dto){

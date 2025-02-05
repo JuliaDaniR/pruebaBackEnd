@@ -26,7 +26,7 @@ public class ValidateReservationResourceStatus {
     public Resource validateByResourceStatus(ReservationDto reservationDto) throws MyException {
 
         Reservation reservation = new Reservation(reservationDto);
-        Resource resource = resourceRepository.findById(reservationDto.resourceid()).orElseThrow();
+        Resource resource = resourceRepository.findById(reservationDto.resourceId()).orElseThrow();
 
 //        boolean isResourceBooked = reservationRepository.existsByResourceIdAndStartDate(resource.getId(), reservation.getStartDate());
         resourceService.validateResourceAvailability(resource.getId(), reservationDto);
