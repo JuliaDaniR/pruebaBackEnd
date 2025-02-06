@@ -34,56 +34,94 @@ import java.util.Map;
 @SecurityRequirement(name = "bearer-key")
 public class InstitutionController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private TokenService tokenService;
+    private final InstitutionService institutionService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @PostMapping
-    public ResponseEntity<?> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
-
+    @PostMapping("/register")
+    public ResponseEntity<?> registerInstitution(
+            @Valid @RequestBody DataRegistrationInstitution dataInstitutionRegistration,
+            UriComponentsBuilder uriComponentsBuilder) {
         try {
-            User user = userRepository.findByEmail(dataAuthenticationUser.email());
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
-            }
+            Institution institution = institutionService.registerInstitution(dataInstitutionRegistration);
+            DataAnswerInstitution dataAnswerInstitution = new DataAnswerInstitution(
+                    institution.getCue(),
+                    institution.getName(),
+                    institution.getAddress(),
+                    institution.getEmail(),
+                    institution.getPhone(),
+                    institution.getEducationalLevel(),
+                    institution.getWebsite()
 
-            if (!user.isActive()) {
-                throw new MyException("Usuario inactivo, contacte al administrador.");
-            }
-
-            Authentication authenticationToken = new UsernamePasswordAuthenticationToken(
-                    dataAuthenticationUser.email(), dataAuthenticationUser.password());
-            Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
-            User authenticatedUser = (User) userAuthenticated.getPrincipal();
-
-            String tokenJWT = tokenService.generateToken(authenticatedUser);
-            DataJWTtoken response = new DataJWTtoken(
-                    tokenJWT,
-                    authenticatedUser.getFullName(),
-                    authenticatedUser.getDni(),
-                    authenticatedUser.getRole()
             );
-
-            return ResponseEntity.ok(response);
-
+            URI url = uriComponentsBuilder.path("/institution/{cue}").buildAndExpand(institution.getCue()).toUri();
+            return ResponseEntity.created(url).body(Map.of(
+                    "status", "success",
+                    "message", "Institución registrada con éxito",
+                    "data", dataAnswerInstitution
+            ));
         } catch (MyException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+            return ResponseEntity.badRequest().body(Map.of(
                     "status", "error",
                     "message", e.getMessage()
-            ));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
-                    "status", "error",
-                    "message", "Credenciales incorrectas"
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "status", "error",
                     "message", "Error interno del servidor: " + e.getMessage()
+            ));
+        }
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateInstitution(@RequestBody @Valid DataRegistrationInstitution.DataUpdateInstitution dataUpdateInstitution) {
+        try {
+            DataListInstitution institution = institutionService.updateInstitution(dataUpdateInstitution);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Institución actualizada con éxito",
+                    "data", institution
+            ));
+        } catch (MyException e) {
+            return ResponseEntity.badRequest().body(Map.of(
+                    "status", "error",
+                    "message", e.getMessage()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", "error",
+                    "message", "Error interno del servidor: " + e.getMessage()
+            ));
+        }
+    }
+
+    @GetMapping("/getCue/{cue}")
+    public ResponseEntity<?> returnDataInstitutionByCue(@PathVariable String cue) throws MyException {
+        try {
+            DataAnswerInstitution dataInstitution = institutionService.returnDataInstitutionByCue(cue);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Institución obtenida con éxito",
+                    "data", dataInstitution
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", "error",
+                    "message", "Error interno al obtener la institución"
+            ));
+        }
+    }
+
+    @DeleteMapping("/delete/{cue}")
+    public ResponseEntity<?> deleteInstitution(@PathVariable String cue) {
+        try {
+            institutionService.deleteInstitution(cue);
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Institución eliminada con éxito"
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
+                    "status", "error",
+                    "message", "Error interno al eliminar la institución"
             ));
         }
     }
