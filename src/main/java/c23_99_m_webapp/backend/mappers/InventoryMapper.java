@@ -22,7 +22,5 @@ public class InventoryMapper {
                 inventory.getResources().stream().map(ResourceViewMapper::toDTO).collect(Collectors.toList())
         );
     }
-
-
 }
 

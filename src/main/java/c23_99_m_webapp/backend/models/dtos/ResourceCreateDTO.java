@@ -18,3 +18,4 @@ public record ResourceCreateDTO(
         Long inventoryId
 ) {
 }
+

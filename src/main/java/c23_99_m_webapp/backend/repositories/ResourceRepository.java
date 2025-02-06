@@ -15,4 +15,3 @@ public interface ResourceRepository extends JpaRepository<Resource, Long> {
     List<Resource> findAllByStatus(ResourceStatus status);
     List<Resource> findAllByInventory(Inventory inventory);
 }
-

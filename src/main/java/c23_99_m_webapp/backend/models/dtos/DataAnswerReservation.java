@@ -6,8 +6,6 @@ import org.springframework.security.core.userdetails.User;
 
 import java.time.LocalDate;
 
-//lo que se deberia mostrar en consola (respuesta)
-//lo que se deberia mostrar en consola (respuesta)
 public record DataAnswerReservation(
 
         String userName,
@@ -19,4 +17,3 @@ public record DataAnswerReservation(
 
 ) {
 }
-

@@ -117,6 +117,7 @@ public class User implements UserDetails {
     public void activateUser() {
         this.active = true;
     }
+
     public boolean isActive() {
         return this.active;
     }

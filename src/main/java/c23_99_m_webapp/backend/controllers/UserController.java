@@ -40,7 +40,7 @@ public class UserController {
             User userAutenticated = userService.getCurrentUser();
             Optional<Institution> institutionOptional = institutionRepository.findByCue(userAutenticated.getInstitution().getCue());
             User user = userService.registerUser(dataUserRegistration,institutionOptional.get());
-            DataAnswerUser dataAnswerUser = new DataAnswerUser(user.getFullName(), user.getEmail(), user.getRole());
+            DataAnswerUser dataAnswerUser = new DataAnswerUser(user.getFullName(), user.getEmail(),user.getRole());
             URI url = uriComponentsBuilder.path("/user/{dni}").buildAndExpand(user.getDni()).toUri();
             return ResponseEntity.created(url).body(Map.of(
                     "status", "success",

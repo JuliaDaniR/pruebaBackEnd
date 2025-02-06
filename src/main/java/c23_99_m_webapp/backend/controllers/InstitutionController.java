@@ -2,15 +2,25 @@ package c23_99_m_webapp.backend.controllers;
 
 import c23_99_m_webapp.backend.exceptions.MyException;
 import c23_99_m_webapp.backend.models.Institution;
+import c23_99_m_webapp.backend.models.User;
 import c23_99_m_webapp.backend.models.dtos.*;
+import c23_99_m_webapp.backend.repositories.UserRepository;
+import c23_99_m_webapp.backend.security.DataAuthenticationUser;
+import c23_99_m_webapp.backend.security.DataJWTtoken;
+import c23_99_m_webapp.backend.security.TokenService;
 import c23_99_m_webapp.backend.services.InstitutionService;
 import c23_99_m_webapp.backend.services.InventoryService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import c23_99_m_webapp.backend.models.dtos.DataAnswerInstitution;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -24,94 +34,56 @@ import java.util.Map;
 @SecurityRequirement(name = "bearer-key")
 public class InstitutionController {
 
-    private final InstitutionService institutionService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private TokenService tokenService;
 
-    @PostMapping("/register")
-    public ResponseEntity<?> registerInstitution(
-            @Valid @RequestBody DataRegistrationInstitution dataInstitutionRegistration,
-            UriComponentsBuilder uriComponentsBuilder) {
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping
+    public ResponseEntity<?> authenticateUser(@RequestBody DataAuthenticationUser dataAuthenticationUser) {
+
         try {
-            Institution institution = institutionService.registerInstitution(dataInstitutionRegistration);
-            DataAnswerInstitution dataAnswerInstitution = new DataAnswerInstitution(
-                    institution.getCue(),
-                    institution.getName(),
-                    institution.getAddress(),
-                    institution.getEmail(),
-                    institution.getPhone(),
-                    institution.getEducationalLevel(),
-                    institution.getWebsite()
+            User user = userRepository.findByEmail(dataAuthenticationUser.email());
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no encontrado.");
+            }
 
+            if (!user.isActive()) {
+                throw new MyException("Usuario inactivo, contacte al administrador.");
+            }
+
+            Authentication authenticationToken = new UsernamePasswordAuthenticationToken(
+                    dataAuthenticationUser.email(), dataAuthenticationUser.password());
+            Authentication userAuthenticated = authenticationManager.authenticate(authenticationToken);
+            User authenticatedUser = (User) userAuthenticated.getPrincipal();
+
+            String tokenJWT = tokenService.generateToken(authenticatedUser);
+            DataJWTtoken response = new DataJWTtoken(
+                    tokenJWT,
+                    authenticatedUser.getFullName(),
+                    authenticatedUser.getDni(),
+                    authenticatedUser.getRole()
             );
-            URI url = uriComponentsBuilder.path("/institution/{cue}").buildAndExpand(institution.getCue()).toUri();
-            return ResponseEntity.created(url).body(Map.of(
-                    "status", "success",
-                    "message", "Institución registrada con éxito",
-                    "data", dataAnswerInstitution
-            ));
+
+            return ResponseEntity.ok(response);
+
         } catch (MyException e) {
-            return ResponseEntity.badRequest().body(Map.of(
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
                     "status", "error",
                     "message", e.getMessage()
+            ));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of(
+                    "status", "error",
+                    "message", "Credenciales incorrectas"
             ));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                     "status", "error",
                     "message", "Error interno del servidor: " + e.getMessage()
-            ));
-        }
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<?> updateInstitution(@RequestBody @Valid DataRegistrationInstitution.DataUpdateInstitution dataUpdateInstitution) {
-        try {
-            DataListInstitution institution = institutionService.updateInstitution(dataUpdateInstitution);
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "Institución actualizada con éxito",
-                    "data", institution
-            ));
-        } catch (MyException e) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "status", "error",
-                    "message", e.getMessage()
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "message", "Error interno del servidor: " + e.getMessage()
-            ));
-        }
-    }
-
-    @GetMapping("/getCue/{cue}")
-    public ResponseEntity<?> returnDataInstitutionByCue(@PathVariable String cue) throws MyException {
-        try {
-            DataAnswerInstitution dataInstitution = institutionService.returnDataInstitutionByCue(cue);
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "Institución obtenida con éxito",
-                    "data", dataInstitution
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "message", "Error interno al obtener la institución"
-            ));
-        }
-    }
-
-    @DeleteMapping("/delete/{cue}")
-    public ResponseEntity<?> deleteInstitution(@PathVariable String cue) {
-        try {
-            institutionService.deleteInstitution(cue);
-            return ResponseEntity.ok(Map.of(
-                    "status", "success",
-                    "message", "Institución eliminada con éxito"
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
-                    "status", "error",
-                    "message", "Error interno al eliminar la institución"
             ));
         }
     }

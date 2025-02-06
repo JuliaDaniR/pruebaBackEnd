@@ -21,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+
 @Service
 public class InventoryService {
 
@@ -100,5 +101,4 @@ public class InventoryService {
 
 
 }
-
 

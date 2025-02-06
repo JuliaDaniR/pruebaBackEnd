@@ -18,3 +18,4 @@ public record DataAnswerReserveByDniUser(
         ReservationStatus reservationStatus
 ) {
 }
+
